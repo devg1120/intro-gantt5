@@ -22,11 +22,12 @@ export default class ChildLineComponent extends Component {
 
   //dayWidth= alias('chart.dayWidth');
   @alias('chart.dayWidth') dayWidth;
-  @alias('job.dateStart') dateStart;
-  @alias('job.dateEnd') dateEnd;
 
   title= '';
 
+  dateStart= null;
+
+  dateEnd= null;
 
   // collapsed: false, // use ember-bootstrap !
 
@@ -45,13 +46,10 @@ export default class ChildLineComponent extends Component {
   classNames= ['gantt-line-wrap'];
   classNameBindings= ['isResizing','isMoving'];
 
-  //@alias('job.dateStart') dateStart;
-  //@alias('job.dateEnd') dateEnd;
-
   constructor(owner, args) {
     super(owner, args);
-    //this.dateStart = args.job.dateStart;
-    //this.dateEnd   = args.job.dateEnd;
+    this.dateStart = args.job.dateStart;
+    this.dateEnd   = args.job.dateEnd;
     this.color   = args.job.color;
     this.chart   = args.chart;
     this.job   = args.job;
@@ -137,15 +135,13 @@ export default class ChildLineComponent extends Component {
 
   @computed('dateStart', 'dayWidth','chart.viewStartDate')
   get barOffset(){
-    //return get(this, 'chart').dateToOffset( get(this, 'dateStart') );
-    return get(this, 'chart').dateToOffset( this.dateStart );
+    return get(this, 'chart').dateToOffset( get(this, 'dateStart') );
   }
 
   // width of bar on months
   @computed('dateStart', 'dateEnd', 'dayWidth') 
   get barWidth() {
-    //return get(this, 'chart').dateToOffset( get(this, 'dateEnd'), get(this, 'dateStart'), true );
-    return get(this, 'chart').dateToOffset( this.dateEnd, this.dateStart, true );
+    return get(this, 'chart').dateToOffset( get(this, 'dateEnd'), get(this, 'dateStart'), true );
   }
 
   // styling for left/width
@@ -157,19 +153,15 @@ export default class ChildLineComponent extends Component {
     if (get(this, 'color')) {
       style+= `background-color:${get(this, 'color')}`;
     }
-    console.log(htmlSafe(style));
     return htmlSafe(style);
   }
 
   // TODO: title -> ?
   @computed('dateStart', 'dateEnd')
   get barTitle() {
-    //let days = get(this, 'chart').dateToOffset( get(this, 'dateStart') ) / get(this, 'dayWidth');
-    //let start = get(this, 'dateStart'),
-    //    end = get(this, 'dateEnd');
-    let days = get(this, 'chart').dateToOffset( this.dateStart  / this.dayWidth);
-    let start = this.dateStart,
-        end = this.dateEnd;
+    let days = get(this, 'chart').dateToOffset( get(this, 'dateStart') ) / get(this, 'dayWidth');
+    let start = get(this, 'dateStart'),
+        end = get(this, 'dateEnd');
 
     if (start && end) {
       return `days: ${days} : `+start.toString()+' to '+end.toString();
@@ -228,8 +220,7 @@ export default class ChildLineComponent extends Component {
     this.initTimlineOffset();
 
     // remember days-duration of line
-    //let moveDays = Math.floor(Math.abs(get(this, 'dateStart').getTime() - get(this, 'dateEnd').getTime()) / 86400000);
-    let moveDays = Math.floor(Math.abs(this.dateStart.getTime() - this.dateEnd.getTime()) / 86400000);
+    let moveDays = Math.floor(Math.abs(get(this, 'dateStart').getTime() - get(this, 'dateEnd').getTime()) / 86400000);
 
     // remember click-offset for adjusting mouse-to-bar
     let mouseOffset = e.clientX - this.offsetLeft(e.target);
@@ -254,22 +245,17 @@ export default class ChildLineComponent extends Component {
     if (get(this, 'isResizingLeft')) {
       dateOffset = (dateOffset > get(this, 'dateEnd')) ? get(this, 'dateEnd') : dateOffset; // dont allow lower than start
       set(this, 'dateStart', dateOffset);
-      set(this.job, 'dateStart', this.dateStart); 
 
     // resize right
     } else if (get(this, 'isResizingRight')) {
-      //dateOffset = (dateOffset < get(this, 'dateStart')) ? get(this, 'dateStart') : dateOffset; // dont allow lower than start
-      dateOffset = (dateOffset < this.dateStart) ? this.dateStart : dateOffset; // dont allow lower than start
+      dateOffset = (dateOffset < get(this, 'dateStart')) ? get(this, 'dateStart') : dateOffset; // dont allow lower than start
       set(this, 'dateEnd', dateOffset);
-      set(this.job, 'dateEnd', this.dateEnd);
 
     // move
     } else if (get(this, 'isMoving')) {
       let dateOffsetEnd = new Date(dateOffset.getTime() + (get(this, 'movingDays')*86400000));
       set(this, 'dateStart', dateOffset);
       set(this, 'dateEnd', dateOffsetEnd);
-      set(this.job, 'dateStart', this.dateStart); 
-      set(this.job, 'dateEnd', this.dateEnd);
     }
 
   };
@@ -299,12 +285,11 @@ export default class ChildLineComponent extends Component {
       }
     }
     */
-      //set(this.job, 'dateStart', this.dateStart); 
-      //set(this.job, 'dateEnd', this.dateEnd);
+      set(this.job, 'dateStart', this.dateStart); 
+      set(this.job, 'dateEnd', this.dateEnd);
       //    console.log(this.project);
 	  //
-    //this.onDataUpdate(this.job, this.dateStart, this.dateEnd);
-    this.onDataUpdate();
+    this.onDataUpdate(this.job, this.dateStart, this.dateEnd);
 
   }
 
