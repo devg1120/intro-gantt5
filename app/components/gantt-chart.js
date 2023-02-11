@@ -289,7 +289,7 @@ export default class GanttChartComponent extends Component {
         if (e.target.className == 'gantt-line-timeline' || e.target.className == 'day') {
            e.preventDefault();
 	   //e.stopPropagation();
-           console.log("mouse down")
+           //console.log("mouse down")
 	   this.mouse_moving = true;
            this.scrolling = true;
 	}
@@ -301,7 +301,7 @@ export default class GanttChartComponent extends Component {
         if (e.target.className == 'gantt-line-timeline' || e.target.className == 'day') {
            e.preventDefault();
 	   //e.stopPropagation();
-           console.log("mouse up:", e.target.className)
+           //console.log("mouse up:", e.target.className)
 	   this.mouse_moving = false;
            this.scrolling = false;
 	}
